@@ -1,0 +1,30 @@
+.filterBuilderContainer {
+  padding: 24px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #f8fafc 0%, #ffffff 100%);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+}
+
+.filterBuilderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filterBuilderTitle {
+  font-weight: 600 !important;
+  color: #1e293b;
+  font-size: 1.125rem !important;
+}

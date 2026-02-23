@@ -1,6 +1,6 @@
 import type { Employee } from "./employee.types";
 
-export type FieldType = 
+export type FilterType = 
   | 'text' 
   | 'number' 
   | 'date' 
@@ -9,6 +9,30 @@ export type FieldType =
   | 'multiselect' 
   | 'boolean';
 
+export interface FieldSchema {
+  id: string;
+  label: string;
+  type: FilterType;
+}
+
+export type FilterOperatorMap = {
+  text: string[];
+  number: string[];
+  date: string[];
+  amount: string[];
+  select: string[];
+  multiselect: string[];
+  boolean: string[];
+};
+
+export interface FieldConfig {
+  key: keyof Employee | string;
+  label: string;
+  type: FilterType;
+  operators: Operator[];
+  options?: { label: string; value: string }[];
+}
+
 export interface Operator {
   value: string;
   label: string;
@@ -16,16 +40,8 @@ export interface Operator {
   apply: (row: any, value: any, fieldKey: string) => boolean;
 }
 
-export interface FieldConfig {
-  key: keyof Employee | string; // Support nested: 'address.city'
-  label: string;
-  type: FieldType;
-  operators: Operator[];
-  options?: { label: string; value: string }[]; // for select/multiselect
-}
-
 export interface FilterCondition {
-  id: string; // unique identifier
+  id: string;
   field: string;
   operator: string;
   value: any;
@@ -34,3 +50,21 @@ export interface FilterCondition {
 }
 
 export type FilterState = FilterCondition[];
+
+export interface FilterBuilderContextValue {
+  schema: FieldConfig[];
+}
+
+export interface FilterBuilderProps {
+  data: Employee[];
+  schema: FieldConfig[];
+  onFilteredDataChange?: (filteredData: Employee[]) => void;
+}
+
+export type FilterValue = 
+  | string
+  | number
+  | boolean
+  | { start: string; end: string }
+  | { min: number | ''; max: number | '' }
+  | string[];

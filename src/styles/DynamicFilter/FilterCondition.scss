@@ -1,0 +1,91 @@
+.filterConditionContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  }
+
+  &:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  &.is-active {
+    border-color: #3b82f6;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+  }
+}
+
+.filterConditionContent {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.fieldSelector,
+.operatorSelector,
+.valueInput {
+  flex-shrink: 0;
+}
+
+.fieldSelector {
+  min-width: 140px;
+}
+
+.operatorSelector {
+  min-width: 110px;
+}
+
+.valueInput {
+  flex: 1;
+  min-width: 120px;
+}
+
+.removeButton {
+  width: 32px;
+  height: 32px;
+  color: #94a3b8;
+  
+  &:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .filterConditionContainer {
+    padding: 10px 12px;
+    gap: 8px;
+    
+    .fieldSelector { 
+      min-width: 100px !important; 
+    }
+    
+    .operatorSelector { 
+      min-width: 90px !important; 
+    }
+    
+    .valueInput { 
+      min-width: 100px !important; 
+    }
+  }
+}

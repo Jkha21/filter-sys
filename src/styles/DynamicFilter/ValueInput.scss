@@ -1,0 +1,90 @@
+.valueInput {
+  &.text {
+    .MuiTextField-root {
+      width: 100%;
+      
+      .MuiInputBase-root {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  &.number {
+    .MuiTextField-root {
+      width: 120px;
+      
+      @media (max-width: 768px) {
+        width: 100px !important;
+      }
+    }
+  }
+
+  &.date {
+    .date-range {
+      .MuiTextField-root {
+        flex: 1;
+        
+        &:first-child::after {
+          content: '→';
+          position: absolute;
+          right: -8px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #94a3b8;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  &.amount {
+    .currency-range {
+      .MuiTextField-root {
+        width: 80px;
+        
+        @media (max-width: 768px) {
+          width: 70px !important;
+        }
+      }
+    }
+  }
+
+  &.singleSelect,
+  &.multiSelect {
+    min-width: 120px;
+  }
+
+  &.boolean {
+    .MuiToggleButtonGroup-root {
+      border-radius: 8px;
+      
+      .MuiToggleButton-root {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: none !important;
+        
+        &:first-child {
+          border-top-left-radius: 8px;
+          border-bottom-left-radius: 8px;
+        }
+        
+        &:last-child {
+          border-top-right-radius: 8px;
+          border-bottom-right-radius: 8px;
+        }
+        
+        &.Mui-selected {
+          background: linear-gradient(135deg, #10b981, #059669) !important;
+          color: white !important;
+        }
+      }
+    }
+  }
+
+  .MuiOutlinedInput-root {
+    &:hover .MuiOutlinedInput-notchedOutline {
+      border-color: #3b82f6;
+    }
+  }
+}

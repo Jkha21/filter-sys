@@ -1,0 +1,59 @@
+.operatorSelector {
+  .MuiFormControl-root {
+    min-width: 110px;
+    
+    @media (max-width: 768px) {
+      min-width: 90px !important;
+    }
+  }
+
+  .MuiInputLabel-root {
+    color: #64748b;
+    font-weight: 500;
+    font-size: 0.8rem;
+    
+    &.MuiInputLabel-shrink {
+      color: #10b981;
+      font-weight: 600;
+    }
+  }
+
+  .MuiSelect-select {
+    padding: 10px 10px 8px !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1e293b;
+    
+    &:focus {
+      background: rgba(16, 185, 129, 0.08);
+    }
+  }
+
+  .MuiSvgIcon-root {
+    font-size: 1rem;
+  }
+
+  .MuiMenuItem-root {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+    
+    &:hover {
+      background: linear-gradient(90deg, #d1fae5, #a7f3d0);
+    }
+    
+    &.Mui-selected {
+      background: linear-gradient(90deg, #10b981, #059669) !important;
+      color: white !important;
+    }
+  }
+
+  .MuiOutlinedInput-notchedOutline {
+    border-color: #d1d5db;
+    
+    &:hover {
+      border-color: #6b7280;
+    }
+  }
+}

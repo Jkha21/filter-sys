@@ -1,0 +1,55 @@
+.filterListContainer {
+  padding-left: 4px;
+  min-height: 60px;
+}
+
+.filtersStack {
+  transition: all 0.3s ease;
+}
+
+.emptyFilterChip {
+  max-width: 280px;
+  height: 42px;
+  border-radius: 20px;
+  border-width: 2px;
+  cursor: pointer !important;
+  
+  &:hover {
+    background-color: #e3f2fd !important;
+    border-color: #2196f3 !important;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+  }
+  
+  .MuiChip-label {
+    font-weight: 500;
+    color: #64748b;
+  }
+  
+  .MuiSvgIcon-root {
+    color: #94a3b8;
+  }
+}
+
+.addFilterButton {
+  align-self: flex-start !important;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  
+  &:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transform: scale(1.05);
+  }
+  
+  .MuiSvgIcon-root {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .emptyFilterChip {
+    max-width: 100%;
+  }
+}

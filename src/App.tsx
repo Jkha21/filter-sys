@@ -1,116 +1,110 @@
-import React, { useEffect, useState } from 'react';  // ✅ FIXED
-import { Container, Typography, Paper, Button, Box, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { useFilters } from './hooks/useFilter.types';
-import { useFilteredData } from './hooks/useFilteredData.types';
-import type { Employee, FilterCondition } from './types';
+import React from 'react';
+import { Paper } from '@mui/material';
+import Header from './components/Header';
+import { FilterBuilder } from './components/DynamicFilter/FilterBuilder/FilterBuilder';
+import { DataTable } from './components/DataTable/DataTable';
+import type { FieldSchema } from './types/filter.types';
+import type { Employee } from './types/employee.types';
 import { fieldConfigs } from './config/field.config';
 
 function App() {
-  const { 
-    filters, 
-    validFilters, 
-    addFilter, 
-    updateFilter, 
-    removeFilter, 
-    clearFilters,
-    hasFilters 
-  } = useFilters();
+  const fieldSchema: FieldSchema[] = Array.isArray(fieldConfigs) 
+    ? fieldConfigs.map((config) => ({
+        id: String(config.key),
+        label: config.label,
+        type: config.type
+      }))
+    : [];
 
-  const { data: filteredEmployees, total, filtered } = useFilteredData(validFilters);
+  const [employees ] = React.useState<Employee[]>([]);
+  const [filteredEmployees, setFilteredEmployees] = React.useState<Employee[]>([]);
+  const [totalEmployees, setTotalEmployees] = React.useState(0);
 
-  const handleFieldChange = (id: string, value: string) => {
-    updateFilter(id, 'field', value);
-    const fieldConfig = fieldConfigs[value as keyof typeof fieldConfigs];
-    if (fieldConfig) {
-      updateFilter(id, 'operator', fieldConfig.operators[0].value);
-    }
+  const handleFilteredDataChange = (filteredData: Employee[]) => {
+    setFilteredEmployees(filteredData);
+  };
+
+  React.useEffect(() => {
+    setTotalEmployees(1000);
+  }, []);
+
+  const handleClearFilters = () => {
+    setFilteredEmployees(employees);
+  };
+
+  const handleExportData = () => {
+    const headers = [
+      'ID', 'Name', 'Email', 'Department', 'Role', 'Salary', 
+      'Join Date', 'Active', 'Skills', 'City', 'Projects', 'Rating'
+    ];
+    const csvContent = [
+      headers.join(','),
+      ...filteredEmployees.map(emp => [
+        emp.id, 
+        `"${emp.name}"`, 
+        `"${emp.email}"`, 
+        emp.department, 
+        emp.role, 
+        emp.salary, 
+        emp.joinDate, 
+        emp.isActive ? 'Yes' : 'No',
+        Array.isArray(emp.skills) ? `"${emp.skills.join('; ')}"` : '',
+        emp.address?.city || '', 
+        emp.projects, 
+        emp.performanceRating
+      ].join(','))
+    ].join('\n');
+  
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `employees_${filteredEmployees.length === totalEmployees ? 'all' : 'filtered'}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleRefreshData = () => {
+    window.location.reload();
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Paper sx={{ p: 4, mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Dynamic Filter System ✅
-        </Typography>
-        <Typography>
-          Total: {total} | Filtered: {filtered} | Active: {validFilters.length}
-        </Typography>
-        
-        <Box sx={{ mt: 3 }}>
-          <Button onClick={addFilter} variant="contained" sx={{ mr: 2 }}>
-            + Add Filter
-          </Button>
-          {hasFilters && (
-            <Button onClick={clearFilters} variant="outlined">
-              Clear All
-            </Button>
-          )}
-        </Box>
+    <>
+      <Header
+        filteredCount={filteredEmployees.length}
+        totalCount={totalEmployees}
+        onClearFilters={handleClearFilters}
+        onExportData={handleExportData}
+        onRefreshData={handleRefreshData}
+      />
 
-        {filters.map((filter: FilterCondition) => (
-          <Box key={filter.id} sx={{ mt: 2, p: 2, border: '1px solid #eee', borderRadius: 1 }}>
-            <FormControl sx={{ mr: 2, minWidth: 120 }}>
-              <InputLabel>Field</InputLabel>
-              <Select 
-                value={filter.field} 
-                label="Field"
-                onChange={(e) => handleFieldChange(filter.id, e.target.value as string)}
-              >
-                <MenuItem value="">Select Field</MenuItem>
-                {Object.entries(fieldConfigs).map(([key, config]) => (
-                  <MenuItem key={key} value={key}>{config.label}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {filter.field && (
-              <>
-                <FormControl sx={{ mr: 2, minWidth: 120 }}>
-                  <InputLabel>Operator</InputLabel>
-                  <Select 
-                    value={filter.operator}
-                    label="Operator"
-                    onChange={(e) => updateFilter(filter.id, 'operator', e.target.value)}
-                  >
-                    {fieldConfigs[filter.field as string]?.operators.map((op) => (
-                      <MenuItem key={op.value} value={op.value}>{op.label}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                
-                <input
-                  value={filter.value || ''}
-                  onChange={(e) => updateFilter(filter.id, 'value', e.target.value)}
-                  placeholder="Value"
-                  style={{ marginRight: 10, padding: 8, border: '1px solid #ccc', borderRadius: 4 }}
-                />
-              </>
-            )}
-            
-            <Button 
-              onClick={() => removeFilter(filter.id)} 
-              size="small"
-              variant="outlined"
-              color="error"
-              sx={{ mr: 1 }}
-            >
-              Remove
-            </Button>
-            
-            <span style={{ color: filter.isValid ? 'green' : 'red' }}>
-              {filter.isValid ? 'Valid' : 'Invalid'}
-            </span>
-          </Box>
-        ))}
+      <Paper 
+        elevation={3}
+        sx={{ 
+          mx: 2, 
+          mt: 4, 
+          mb: 2,
+          p: 3,
+          borderRadius: 2
+        }}
+      >
+        <FilterBuilder
+          data={employees}
+          schema={fieldSchema}
+          onFilteredDataChange={handleFilteredDataChange}
+        />
       </Paper>
 
-      <Paper sx={{ p: 4 }}>
-        <Typography variant="h6">Results: {filtered}</Typography>
-        <pre style={{ fontSize: 12, maxHeight: 300, overflow: 'auto' }}>
-          {JSON.stringify(filteredEmployees.slice(0, 3), null, 2)}
-        </pre>
-      </Paper>
-    </Container>
+      <div style={{ margin: '0 16px' }}>
+        <DataTable 
+          data={filteredEmployees}
+          total={totalEmployees}
+          filtered={filteredEmployees.length}
+        />
+      </div>
+    </>
   );
 }
 

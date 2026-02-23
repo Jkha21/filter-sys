@@ -1,4 +1,6 @@
-import React from 'react';
+// src/components/DataTable/DataTable.tsx
+import React, { useState } from 'react';
+import '../../styles/DataTable/DataTable.scss';
 import {
   Table,
   TableBody,
@@ -12,7 +14,7 @@ import {
   Chip,
   Box
 } from '@mui/material';
-import type { Employee } from '../../types/employee.types';
+import type { Employee } from '../../types';
 
 interface DataTableProps {
   data: Employee[];
@@ -21,21 +23,26 @@ interface DataTableProps {
 }
 
 interface Column {
-  key: keyof Employee | string;  // ✅ Support nested fields
+  key: keyof Employee | string;
   label: string;
-  render?: (value: any, row: Employee) => React.ReactNode;  // ✅ ReactNode only
+  render?: (value: any, row: Employee) => React.ReactNode;
 }
 
 const columns: Column[] = [
   { key: 'name', label: 'Name' },
   { key: 'department', label: 'Department' },
-  { key: 'role', label: 'Role' },
-  { key: 'salary', label: 'Salary', render: (val) => `$${Number(val)?.toLocaleString() || '—'}` },
+  { key: 'role', label: 'Role' }, 
+  { 
+    key: 'salary', 
+    label: 'Salary', 
+    render: (val) => `$${Number(val)?.toLocaleString() || '—'}` 
+  },
   { 
     key: 'isActive', 
     label: 'Status', 
     render: (val) => (
       <Chip 
+        className={`data-table-chip ${val ? 'data-table-chip--active' : ''}`}
         label={val ? 'Active' : 'Inactive'} 
         color={val ? 'success' : 'default'} 
         size="small" 
@@ -46,13 +53,20 @@ const columns: Column[] = [
     key: 'performanceRating', 
     label: 'Rating', 
     render: (val) => (
-      <Box sx={{ color: Number(val) >= 4 ? 'success.main' : 'warning.main' }}>
+      <Box className={`data-table-cell--rating ${Number(val) < 4 ? 'data-table-rating-low' : ''}`} sx={{ 
+        color: Number(val) >= 4 ? 'success.main' : 'warning.main',
+        fontWeight: 600,
+        padding: '4px 12px',
+        borderRadius: '16px',
+        minWidth: '56px',
+        textAlign: 'center' as const
+      }}>
         {Number(val) || 0}/5
       </Box>
     )
   },
   { 
-    key: 'address.city',  // ✅ Nested field
+    key: 'address.city',
     label: 'City',
     render: (val) => val || '—'
   },
@@ -68,8 +82,8 @@ export const DataTable: React.FC<DataTableProps> = ({
   total,
   filtered
 }) => {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -87,7 +101,6 @@ export const DataTable: React.FC<DataTableProps> = ({
 
   const emptyRows = page > 0 ? Math.max(0, rowsPerPage - paginatedData.length) : 0;
 
-  // ✅ SAFE FIELD ACCESS FUNCTION
   const getFieldValue = (row: Employee, fieldKey: string): any => {
     if (!fieldKey.includes('.')) {
       return row[fieldKey as keyof Employee];
@@ -96,22 +109,29 @@ export const DataTable: React.FC<DataTableProps> = ({
   };
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <Box sx={{ p: 3, pb: 1 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="h6">Employee Records</Typography>
-          <Typography variant="body2" color="text.secondary">
+    <Paper className="data-table-paper" sx={{ width: '100%', overflow: 'hidden' }}>
+      {/* Pure Table Header - No Filter Controls */}
+      <Box className="data-table-header">
+        <Box className="data-table-header-content">
+          <Typography className="data-table-title" variant="h6">
+            Employee Records
+          </Typography>
+          <Typography className="data-table-stats" variant="body2" color="text.secondary">
             {filtered} of {total} results
           </Typography>
         </Box>
       </Box>
       
-      <TableContainer sx={{ maxHeight: 600 }}>
-        <Table stickyHeader>
+      <TableContainer className="data-table-table-container" sx={{ maxHeight: 600 }}>
+        <Table className="data-table-table" stickyHeader>
           <TableHead>
-            <TableRow>
+            <TableRow className="data-table-header-row">
               {columns.map((column) => (
-                <TableCell key={column.key as string} sx={{ fontWeight: 600 }}>
+                <TableCell 
+                  key={column.key as string} 
+                  className="data-table-head-cell"
+                  sx={{ fontWeight: 700 }}
+                >
                   {column.label}
                 </TableCell>
               ))}
@@ -120,16 +140,26 @@ export const DataTable: React.FC<DataTableProps> = ({
           <TableBody>
             {paginatedData.length > 0 ? (
               paginatedData.map((row: Employee) => (
-                <TableRow hover tabIndex={-1} key={row.id}>
+                <TableRow 
+                  className="data-table-body-row"
+                  hover 
+                  tabIndex={-1} 
+                  key={row.id}
+                >
                   {columns.map((column) => {
                     const value = getFieldValue(row, column.key as string);
-                    
                     return (
-                      <TableCell key={column.key as string} align="left">
-                        {column.render 
-                          ? column.render(value, row)
-                          : String(value || '—')
-                        }
+                      <TableCell 
+                        key={column.key as string} 
+                        className="data-table-body-cell"
+                        align="left"
+                      >
+                        <div className="data-table-cell">
+                          {column.render 
+                            ? column.render(value, row)
+                            : <span className="data-table-cell-text">{String(value || '—')}</span>
+                          }
+                        </div>
                       </TableCell>
                     );
                   })}
@@ -137,12 +167,12 @@ export const DataTable: React.FC<DataTableProps> = ({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} align="center" sx={{ py: 8 }}>
+                <TableCell colSpan={columns.length} align="center" className="data-table-no-results">
                   <Typography variant="h6" color="text.secondary">
                     No results found
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Try adjusting your filters
+                    Try adjusting your filters above
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -156,15 +186,18 @@ export const DataTable: React.FC<DataTableProps> = ({
         </Table>
       </TableContainer>
       
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      <div className="data-table-pagination">
+        <TablePagination
+          className="data-table-pagination-inner"
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </div>
     </Paper>
   );
 };

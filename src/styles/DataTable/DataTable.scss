@@ -1,0 +1,212 @@
+/* DataTable.css - Professional styling for MUI DataTable */
+
+/* Root Container */
+.data-table-paper {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 12px !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Header Section */
+.data-table-header {
+  padding: 24px 24px 16px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.data-table-header-content {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+.data-table-title {
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  font-size: 1.25rem !important;
+}
+
+.data-table-stats {
+  font-size: 0.875rem !important;
+  color: #64748b !important;
+  font-weight: 500 !important;
+  background: #f1f5f9 !important;
+  padding: 6px 16px !important;
+  border-radius: 20px !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Table Container */
+.data-table-table-container {
+  max-height: 600px !important;
+}
+
+.data-table-table {
+  min-width: 650px;
+}
+
+/* Table Head */
+.data-table thead th {
+  font-weight: 700 !important;
+  font-size: 0.875rem !important;
+  color: #374151 !important;
+  background: #f8fafc !important;
+  border-bottom: 2px solid #d1d5db !important;
+  padding: 16px 12px !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.data-table thead th:first-of-type {
+  border-radius: 8px 0 0 0 !important;
+}
+
+.data-table thead th:last-of-type {
+  border-radius: 0 8px 0 0 !important;
+}
+
+/* Table Body */
+.data-table tbody tr {
+  transition: background-color 0.2s ease !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+}
+
+.data-table tbody tr:hover {
+  background: #f0fdf4 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.data-table tbody td {
+  padding: 16px 12px !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid #f9fafb !important;
+  color: #374151 !important;
+  font-size: 0.9rem !important;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* Cell Content */
+.data-table-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.data-table-cell--salary {
+  font-weight: 700 !important;
+  color: #059669 !important;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, monospace !important;
+}
+
+.data-table-cell--rating {
+  font-weight: 600 !important;
+  padding: 4px 12px !important;
+  border-radius: 16px !important;
+  min-width: 56px !important;
+  text-align: center !important;
+}
+
+/* Custom Chip Styling */
+.data-table-chip {
+  height: 28px !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  border-radius: 16px !important;
+}
+
+.data-table-chip--active {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* No Results State */
+.data-table-no-results {
+  padding: 64px 24px !important;
+  text-align: center !important;
+}
+
+.data-table-no-results .MuiTypography-h6 {
+  color: #6b7280 !important;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+}
+
+/* Pagination */
+.data-table-pagination {
+  background: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+  padding: 16px 24px !important;
+}
+
+.data-table-pagination .MuiTablePagination-selectLabel,
+.data-table-pagination .MuiTablePagination-displayedRows {
+  color: #6b7280 !important;
+  font-weight: 500 !important;
+}
+
+.data-table-pagination .MuiTablePagination-select {
+  font-weight: 500 !important;
+}
+
+/* Scrollbar Styling */
+.data-table-table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.data-table-table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.data-table-table-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+  border-radius: 4px;
+}
+
+.data-table-table-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #94a3b8, #64748b);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .data-table-header {
+    padding: 20px 16px 12px !important;
+  }
+  
+  .data-table-header-content {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  
+  .data-table thead th,
+  .data-table tbody td {
+    padding: 12px 8px !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .data-table-cell {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .data-table-stats {
+    padding: 4px 12px !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .data-table-title {
+    font-size: 1.125rem !important;
+  }
+}

@@ -1,0 +1,67 @@
+// Simple, clean styles for minimal header
+.headerContainer {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  box-shadow: 0 2px 10px rgba(25, 118, 210, 0.3) !important;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleMain {
+  font-weight: 600 !important;
+  color: white !important;
+  margin: 0 !important;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 0.75rem !important;
+  font-weight: 400 !important;
+}
+
+.filterChip {
+  height: 28px !important;
+  font-weight: 500 !important;
+  font-size: 0.8rem !important;
+  
+  &.MuiChip-outlinedSecondary {
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+}
+
+.actionButton {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4) !important;
+  }
+  
+  &:disabled {
+    color: rgba(255, 255, 255, 0.4) !important;
+    background: transparent !important;
+  }
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .logoSection {
+    gap: 8px;
+  }
+  
+  .titleMain {
+    font-size: 1.1rem !important;
+  }
+  
+  .subtitle {
+    display: none;
+  }
+}
