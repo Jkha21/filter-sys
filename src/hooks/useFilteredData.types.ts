@@ -1,26 +1,26 @@
-import { useMemo, useCallback, useRef } from 'react';
+import { useMemo, useCallback } from 'react';
 import { getEmployeesSync } from '../data/mockApi';
 import type { Employee, FilterState, FilterResult } from '../types';
 import { fieldConfigs } from '../config/field.config';
 
-function useDebounceCallback<T extends (...args: any[]) => any>(
-  callback: T, 
-  delay: number
-) {
-  const timeoutRef = useRef<number | null>(null);
+// function useDebounceCallback<T extends (...args: any[]) => any>(
+//   callback: T, 
+//   delay: number
+// ) {
+//   const timeoutRef = useRef<number | null>(null);
   
-  return useCallback(
-    (...args: Parameters<T>) => {
-      if (timeoutRef.current !== null) {
-        clearTimeout(timeoutRef.current);
-      }
-      timeoutRef.current = window.setTimeout(() => {
-        callback(...args);
-      }, delay);
-    },
-    [callback, delay]
-  );
-}
+//   return useCallback(
+//     (...args: Parameters<T>) => {
+//       if (timeoutRef.current !== null) {
+//         clearTimeout(timeoutRef.current);
+//       }
+//       timeoutRef.current = window.setTimeout(() => {
+//         callback(...args);
+//       }, delay);
+//     },
+//     [callback, delay]
+//   );
+// }
 
 export const useFilteredData = (filters: FilterState) => {
   const rawData = getEmployeesSync();

@@ -9,6 +9,8 @@ export type FilterType =
   | 'multiselect' 
   | 'boolean';
 
+export type FieldType = FilterType;
+
 export interface FieldSchema {
   id: string;
   label: string;

@@ -9,8 +9,6 @@ import {
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Clear as ClearIcon,
-  FilterAlt as ApplyIcon,
   FilterListOff as ClearAllIcon
 } from '@mui/icons-material';
 import type { FilterCondition } from '../../../types/filter.types';

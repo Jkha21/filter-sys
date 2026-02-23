@@ -33,12 +33,12 @@ const createSelectOperators = (): Operator[] => [
   { value: 'isNot', label: 'Is Not', inputType: 'select', apply: (row, val, key) => row[key] !== val }
 ];
 
-const createMultiSelectOperators = (): Operator[] => [
-  { value: 'in', label: 'Is In', inputType: 'multiselect', apply: (row, vals, key) => 
-    vals.some((val: string) => row[key]?.includes(val)) },
-  { value: 'notIn', label: 'Is Not In', inputType: 'multiselect', apply: (row, vals, key) => 
-    !vals.some((val: string) => row[key]?.includes(val)) }
-];
+// const createMultiSelectOperators = (): Operator[] => [
+//   { value: 'in', label: 'Is In', inputType: 'multiselect', apply: (row, vals, key) => 
+//     vals.some((val: string) => row[key]?.includes(val)) },
+//   { value: 'notIn', label: 'Is Not In', inputType: 'multiselect', apply: (row, vals, key) => 
+//     !vals.some((val: string) => row[key]?.includes(val)) }
+// ];
 
 // Complete field configurations
 export const fieldConfigs: Record<string, FieldConfig> = {

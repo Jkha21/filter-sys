@@ -28,7 +28,7 @@ export const FilterConditionItem: React.FC<FilterConditionProps> = ({
     (filter.value !== '' && filter.value !== null && filter.value !== undefined));
 
   const handleFieldChange = useCallback((field: string) => {
-    const fieldDefinition = schema.find(f => f.id === field);
+    schema.find(f => f.id === field);
     onUpdate({ 
       field, 
       operator: '', 
