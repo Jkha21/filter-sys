@@ -1,92 +1,111 @@
-import React, { useContext, useCallback } from 'react';
-import { Box, IconButton } from '@mui/material';
-import { Close } from '@mui/icons-material';
+import React, { useContext } from 'react';
+import { Box, IconButton, Stack, Typography, Tooltip } from '@mui/material';
+// Requirement: Use Lucide React
+import { Trash2 } from 'lucide-react'; 
 import { FilterBuilderContext } from '../FilterBuilder/FilterBuilder';
 import { FieldSelector } from '../FilterSelector/FilterSelector';
 import { OperatorSelector } from '../OperatorSelector/OperatorSelector';
 import { ValueInput } from '../ValueInput/ValueInput';
-import type { FilterCondition } from '../../../types/filter.types';
-import '../../../styles/DynamicFilter/FilterCondition.scss';
+import { validateFilter, getDefaultValue } from '../FilterUtils/FilterUtils';
+import type { FilterCondition, FieldConfig } from '../../../types/filter.types';
 
-interface FilterConditionProps {
+interface FilterConditionItemProps {
   filter: FilterCondition;
-  onUpdate: (updated: Partial<FilterCondition>) => void;
-  onRemove: () => void;
-  className?: string;
+  index: number;
 }
 
-export const FilterConditionItem: React.FC<FilterConditionProps> = ({
+export const FilterConditionItem: React.FC<FilterConditionItemProps> = ({
   filter,
-  onUpdate,
-  onRemove,
-  className = ''
+  index
 }) => {
-  const { schema } = useContext(FilterBuilderContext);
-  const fieldDef = schema.find(f => f.id === filter.field);
+  const context = useContext(FilterBuilderContext);
+  if (!context) return null;
   
-  const isActive = !!(filter.field && filter.operator && 
-    (filter.value !== '' && filter.value !== null && filter.value !== undefined));
+  const { updateFilter, removeFilter, schema } = context;
+  const fieldDef = (schema as FieldConfig[]).find(f => f.id === filter.field);
 
-  const handleFieldChange = useCallback((field: string) => {
-    schema.find(f => f.id === field);
-    onUpdate({ 
+  const handleFieldChange = (field: string) => {
+    const newFieldDef = (schema as FieldConfig[]).find(f => f.id === field);
+    // FUNCTIONALITY FIX: Reset dependent state to prevent invalid filter combinations
+    updateFilter(filter.id, { 
       field, 
       operator: '', 
-      value: '' 
+      value: '', 
+      type: newFieldDef?.type || 'text',
+      isValid: false 
     });
-  }, [schema, onUpdate]);
+  };
 
-  const handleOperatorChange = useCallback((operator: string) => {
-    onUpdate({ 
+  const handleOperatorChange = (operator: string) => {
+    const defaultValue = getDefaultValue(operator, fieldDef?.type);
+    updateFilter(filter.id, { 
       operator,
-      value: '' 
+      value: defaultValue,
+      isValid: validateFilter({ ...filter, operator, value: defaultValue }, fieldDef?.type || 'text')
     });
-  }, [onUpdate]);
+  };
 
-  const handleValueChange = useCallback((value: any) => {
-    onUpdate({ value });
-  }, [onUpdate]);
-
-  const isOperatorDisabled = !filter.field;
-  const isValueDisabled = !filter.field || !filter.operator;
+  const handleValueChange = (value: any) => {
+    updateFilter(filter.id, { 
+      value, 
+      isValid: validateFilter({ ...filter, value }, fieldDef?.type || 'text') 
+    });
+  };
 
   return (
-    <Box className={`filter-condition-container ${isActive ? 'is-active' : ''} ${className}`}>
-      <div className="filter-condition-content">
+    <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1.5 }}>
+      {/* Requirement: Multiple filter logic visibility */}
+      <Box sx={{ minWidth: 50 }}>
+        <Typography variant="caption" fontWeight="700" color="primary.main" sx={{ textTransform: 'uppercase' }}>
+          {index === 0 ? 'Where' : 'And'}
+        </Typography>
+      </Box>
+
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flex: 1, 
+          gap: 1.5, 
+          p: 1, 
+          borderRadius: 1, 
+          border: '1px solid',
+          borderColor: filter.isValid ? 'primary.light' : 'divider',
+          bgcolor: 'background.paper',
+          alignItems: 'center'
+        }}
+      >
         <FieldSelector
           value={filter.field}
           onChange={handleFieldChange}
-          className="field-selector"
         />
         
-        <div className={`operator-wrapper ${isOperatorDisabled ? 'disabled' : ''}`}>
-          <OperatorSelector
-            fieldType={fieldDef?.type || 'text'}
-            value={filter.operator}
-            onChange={handleOperatorChange}
-            className="operator-selector"
-          />
-        </div>
+        <OperatorSelector
+          fieldId={filter.field}
+          value={filter.operator}
+          onChange={handleOperatorChange}
+        />
         
-        <div className={`value-input-wrapper ${isValueDisabled ? 'disabled' : ''}`}>
+        <Box sx={{ flex: 1 }}>
           <ValueInput
             type={fieldDef?.type || 'text'}
             operator={filter.operator}
             value={filter.value}
+            options={fieldDef?.options}
             onChange={handleValueChange}
-            className="value-input"
           />
-        </div>
-      </div>
-      
-      <IconButton 
-        className="remove-button"
-        onClick={onRemove}
-        size="small"
-        aria-label="Remove this filter condition"
-      >
-        <Close fontSize="small" />
-      </IconButton>
-    </Box>
+        </Box>
+
+        <Tooltip title="Remove condition">
+          <IconButton 
+            onClick={() => removeFilter(filter.id)}
+            size="small"
+            color="error"
+            sx={{ opacity: 0.7, '&:hover': { opacity: 1 } }}
+          >
+            <Trash2 size={18} />
+          </IconButton>
+        </Tooltip>
+      </Box>
+    </Stack>
   );
 };

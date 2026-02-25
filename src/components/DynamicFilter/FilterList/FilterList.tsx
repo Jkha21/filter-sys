@@ -1,72 +1,77 @@
 import React from 'react';
-import { Stack, IconButton, Chip, Fade } from '@mui/material';
-import { Add as AddIcon, FilterList as FilterIcon } from '@mui/icons-material';
+import { Stack, Typography, Fade, Box, Button } from '@mui/material';
+import { Plus, ListFilter } from 'lucide-react'; 
 import { FilterConditionItem } from '../FilterCondition/FilterConditonItem';
 import type { FilterCondition } from '../../../types/filter.types';
-import '../../../styles/DynamicFilter/FilterList.scss';
 
+// FUNCTIONALITY FIX: Removed 'onFiltersChange' as it is now handled via Context
 interface FilterListProps {
   filters: FilterCondition[];
-  onFiltersChange: (filters: FilterCondition[]) => void;
+  onAddFilter: () => void;
 }
 
-export const FilterList: React.FC<FilterListProps> = ({ filters, onFiltersChange }) => {
-  const addFilter = () => {
-    const newFilter: FilterCondition = {
-      id: `filter-${Date.now()}`,
-      field: '',
-      operator: '',
-      value: '',
-      isValid: false
-    };
-    onFiltersChange([...filters, newFilter]);
-  };
-
-  const removeFilter = (id: string) => {
-    onFiltersChange(filters.filter(f => f.id !== id));
-  };
-
-  const updateFilter = (id: string, updated: Partial<FilterCondition>) => {
-    onFiltersChange(
-      filters.map(f => 
-        f.id === id ? { ...f, ...updated } : f
-      )
-    );
-  };
+export const FilterList: React.FC<FilterListProps> = ({ 
+  filters, 
+  onAddFilter 
+}) => {
+  const isEmpty = filters.length === 0;
 
   return (
-    <Stack className="filter-list-container" spacing={1.5}>
-      <Fade in={filters.length === 0}>
-        <Chip
-          className="empty-filter-chip"
-          label="Add your first filter to get started"
-          icon={<FilterIcon />}
-          variant="outlined"
-          onClick={addFilter}
-          clickable
-        />
-      </Fade>
-
-      <Stack spacing={1.5} className="filters-stack">
-        {filters.map((filter) => (
-          <FilterConditionItem
-            key={filter.id}
-            filter={filter}
-            onUpdate={(updated) => updateFilter(filter.id, updated)}
-            onRemove={() => removeFilter(filter.id)}
-          />
-        ))}
-      </Stack>
-
-      {filters.length > 0 && (
-        <IconButton 
-          className="add-filter-button"
-          onClick={addFilter}
-          size="small"
-        >
-          <AddIcon />
-        </IconButton>
+    <Box sx={{ minHeight: isEmpty ? 180 : 'auto' }}>
+      {isEmpty ? (
+        <Fade in timeout={400}>
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              py: 4,
+              border: '2px dashed',
+              borderColor: 'divider',
+              borderRadius: 2,
+              bgcolor: 'action.hover'
+            }}
+          >
+            <ListFilter size={40} color="#9e9e9e" style={{ marginBottom: 12 }} />
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              No filters applied to this dataset.
+            </Typography>
+            {/* Unified CTA: This button does the same as the global Add button */}
+            <Button 
+              variant="contained" 
+              size="small"
+              startIcon={<Plus size={16} />} 
+              onClick={onAddFilter}
+              disableElevation
+            >
+              Add First Filter
+            </Button>
+          </Box>
+        </Fade>
+      ) : (
+        <Stack spacing={1}>
+          {filters.map((filter, index) => (
+            <FilterConditionItem
+              key={filter.id}
+              filter={filter}
+              index={index}
+            />
+          ))}
+          
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+            <Button
+              size="small"
+              variant="text"
+              startIcon={<Plus size={16} />}
+              onClick={onAddFilter}
+              sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
+            >
+              Add another condition
+            </Button>
+          </Box>
+        </Stack>
       )}
-    </Stack>
+    </Box>
   );
 };

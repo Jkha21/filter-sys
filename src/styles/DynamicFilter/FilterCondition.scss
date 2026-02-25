@@ -1,91 +1,123 @@
-.filterConditionContainer {
+.filter-condition-container {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 16px 20px;
   border: 2px solid #e2e8f0;
   border-radius: 16px;
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  &.is-active {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.06) 0%, 
+      rgba(59, 130, 246, 0.02) 100%
+    );
+    box-shadow: 
+      0 8px 25px rgba(59, 130, 246, 0.15),
+      0 0 0 1px rgba(59, 130, 246, 0.2);
   }
 
   &:hover {
     border-color: #cbd5e1;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-  }
-
-  &.is-active {
-    border-color: #3b82f6;
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    
+    &.is-active {
+      box-shadow: 
+        0 16px 40px rgba(59, 130, 246, 0.25),
+        0 0 0 1px rgba(59, 130, 246, 0.3);
+      transform: translateY(-1px);
+    }
   }
 }
 
-.filterConditionContent {
+.filter-condition-content {
   display: flex;
   flex: 1;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   min-width: 0;
 }
 
-.fieldSelector,
-.operatorSelector,
-.valueInput {
-  flex-shrink: 0;
+.field-selector {
+  min-width: 160px;
+  flex: 0 0 160px;
 }
 
-.fieldSelector {
-  min-width: 140px;
+.operator-wrapper,
+.value-input-wrapper {
+  min-width: 130px;
 }
 
-.operatorSelector {
-  min-width: 110px;
+.operator-wrapper {
+  flex: 0 0 130px;
 }
 
-.valueInput {
+.value-input-wrapper {
   flex: 1;
-  min-width: 120px;
+  min-width: 160px;
 }
 
-.removeButton {
-  width: 32px;
-  height: 32px;
+.operator-wrapper.disabled,
+.value-input-wrapper.disabled {
+  opacity: 0.6;
+}
+
+.operator-wrapper.disabled * ,
+.value-input-wrapper.disabled * {
+  pointer-events: none !important;
+}
+
+.field-selector,
+.operator-selector,
+.value-input {
+  width: 100% !important;
+  height: 42px !important;
+}
+
+.remove-button {
+  width: 40px;
+  height: 40px;
   color: #94a3b8;
+  border-radius: 10px;
+  flex-shrink: 0;
+  margin-left: 4px;
   
   &:hover {
-    background: rgba(239, 68, 68, 0.1) !important;
+    background: rgba(239, 68, 68, 0.12) !important;
     color: #ef4444 !important;
   }
 }
 
 @media (max-width: 768px) {
-  .filterConditionContainer {
-    padding: 10px 12px;
-    gap: 8px;
-    
-    .fieldSelector { 
-      min-width: 100px !important; 
-    }
-    
-    .operatorSelector { 
-      min-width: 90px !important; 
-    }
-    
-    .valueInput { 
-      min-width: 100px !important; 
-    }
+  .filter-condition-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .filter-condition-content {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+  
+  .field-selector,
+  .operator-wrapper,
+  .value-input-wrapper {
+    flex: 1 1 100% !important;
+    min-width: 100% !important;
+  }
+  
+  .remove-button {
+    align-self: flex-end;
+    margin-left: 0;
+    margin-top: 8px;
   }
 }
+  

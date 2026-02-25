@@ -1,143 +1,121 @@
-import React, { JSX } from 'react';
-import {
-  Box,
-  ToggleButtonGroup,
-  ToggleButton,
-  TextField
+import React from 'react';
+import { 
+  Box, 
+  TextField, 
+  Autocomplete, 
+  Checkbox, 
+  ToggleButtonGroup, 
+  ToggleButton, 
+  Typography 
 } from '@mui/material';
+import { CheckBox as CheckBoxIcon, CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon } from '@mui/icons-material';
 import type { FilterType } from '../../../types/filter.types';
-import '../../../styles/DynamicFilter/ValueInput.scss';
 
 interface ValueInputProps {
   type: FilterType;
   operator: string;
   value: any;
-  onChange: (value: any) => void;
-  className?: string;
+  onChange: (v: any) => void;
+  options?: { label: string; value: any }[];
 }
 
-interface DateRangeValue {
-  start: string;
-  end: string;
-}
-
-interface CurrencyRangeValue {
-  min: number | '';
-  max: number | '';
-}
-
-export const ValueInput: React.FC<ValueInputProps> = ({
-  type,
-  value,
-  onChange,
-  className = ''
+export const ValueInput: React.FC<ValueInputProps> = ({ 
+  type, 
+  operator, 
+  value, 
+  onChange, 
+  options = [] 
 }) => {
+  const isRange = operator === 'between';
 
-  const renderTextInput = () => (
-    <TextField
-      size="small"
-      value={value || ''}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="Enter text"
-      className={`text-input ${className}`}
-    />
-  );
+  // Optimized Switch-Case to prevent redundant component initialization
+  switch (type) {
+    case 'text':
+      return (
+        <TextField 
+          size="small" 
+          fullWidth 
+          value={value || ''} 
+          onChange={(e) => onChange(e.target.value)} 
+          placeholder="Enter text..." 
+        />
+      );
+    
+    case 'number':
+    case 'amount':
+    case 'date':
+      if (isRange) {
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TextField 
+              size="small" 
+              type={type === 'date' ? 'date' : 'number'} 
+              value={value?.start || ''} 
+              onChange={(e) => onChange({ ...value, start: e.target.value })} 
+              InputLabelProps={{ shrink: true }}
+            />
+            <Typography variant="caption" color="text.secondary">to</Typography>
+            <TextField 
+              size="small" 
+              type={type === 'date' ? 'date' : 'number'} 
+              value={value?.end || ''} 
+              onChange={(e) => onChange({ ...value, end: e.target.value })} 
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
+        );
+      }
+      return (
+        <TextField 
+          size="small" 
+          fullWidth 
+          type={type === 'number' ? 'number' : 'text'} 
+          value={value || ''} 
+          onChange={(e) => onChange(e.target.value)} 
+          placeholder="Enter value..."
+        />
+      );
 
-  const renderNumberInput = () => (
-    <TextField
-      type="number"
-      size="small"
-      value={value || ''}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="0"
-      inputProps={{ step: 'any' }}
-      className={`number-input ${className}`}
-    />
-  );
+    case 'multiselect':
+      return (
+        <Autocomplete 
+          multiple 
+          size="small" 
+          options={options} 
+          disableCloseOnSelect 
+          getOptionLabel={(o) => o.label}
+          value={options.filter(o => value?.includes(o.value))}
+          onChange={(_, newValue) => onChange(newValue.map(v => v.value))}
+          renderInput={(params) => <TextField {...params} placeholder="Select options..." />}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox 
+                icon={<CheckBoxOutlineBlankIcon fontSize="small" />} 
+                checkedIcon={<CheckBoxIcon fontSize="small" />} 
+                checked={selected} 
+              />
+              {option.label}
+            </li>
+          )}
+          sx={{ minWidth: 220 }}
+        />
+      );
 
-  const renderDateRange = () => (
-    <Box className={`date-range ${className}`} sx={{ display: 'flex', gap: 1 }}>
-      <TextField
-        size="small"
-        type="date"
-        value={(value as DateRangeValue)?.start || ''}
-        onChange={(e) => onChange({
-          start: e.target.value,
-          end: (value as DateRangeValue)?.end || ''
-        })}
-        InputLabelProps={{ shrink: true }}
-      />
-      <TextField
-        size="small"
-        type="date"
-        value={(value as DateRangeValue)?.end || ''}
-        onChange={(e) => onChange({
-          start: (value as DateRangeValue)?.start || '',
-          end: e.target.value
-        })}
-        InputLabelProps={{ shrink: true }}
-      />
-    </Box>
-  );
-
-  const renderCurrencyRange = () => (
-    <Box className={`currency-range ${className}`} sx={{ display: 'flex', gap: 1 }}>
-      <TextField
-        type="number"
-        size="small"
-        value={(value as CurrencyRangeValue)?.min || ''}
-        onChange={(e) => onChange({
-          min: e.target.value === '' ? '' : Number(e.target.value),
-          max: (value as CurrencyRangeValue)?.max || ''
-        })}
-        placeholder="Min"
-        inputProps={{ step: '0.01' }}
-      />
-      <TextField
-        type="number"
-        size="small"
-        value={(value as CurrencyRangeValue)?.max || ''}
-        onChange={(e) => onChange({
-          min: (value as CurrencyRangeValue)?.min || '',
-          max: e.target.value === '' ? '' : Number(e.target.value)
-        })}
-        placeholder="Max"
-        inputProps={{ step: '0.01' }}
-      />
-    </Box>
-  );
-
-  const renderSelect = () => (
-    <TextField
-      size="small"
-      value={value || ''}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="Select value"
-      className={`select-input ${className}`}
-    />
-  );
-
-  const renderBoolean = () => (
-    <ToggleButtonGroup
-      value={value ? 'true' : 'false'}
-      exclusive
-      onChange={(_, newValue) => onChange(newValue === 'true')}
-      className={`boolean-toggle ${className}`}
-    >
-      <ToggleButton value="true">True</ToggleButton>
-      <ToggleButton value="false">False</ToggleButton>
-    </ToggleButtonGroup>
-  );
-
-  const renderers: Record<FilterType, JSX.Element> = {
-    text: renderTextInput(),
-    number: renderNumberInput(),
-    date: renderDateRange(),
-    amount: renderCurrencyRange(),
-    select: renderSelect(),
-    multiselect: renderSelect(),
-    boolean: renderBoolean()
-  };
-
-  return <div className={`value-input ${type} ${className}`}>{renderers[type]}</div>;
+    case 'boolean':
+      return (
+        <ToggleButtonGroup 
+          size="small" 
+          value={value === true ? 'true' : value === false ? 'false' : null} 
+          exclusive 
+          onChange={(_, val) => onChange(val === 'true')} 
+          fullWidth
+        >
+          <ToggleButton value="true" sx={{ textTransform: 'none' }}>True</ToggleButton>
+          <ToggleButton value="false" sx={{ textTransform: 'none' }}>False</ToggleButton>
+        </ToggleButtonGroup>
+      );
+      
+    default:
+      return null;
+  }
 };

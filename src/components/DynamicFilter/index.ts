@@ -11,7 +11,6 @@ export type {
   FilterCondition as FilterConditionState, 
   FieldSchema, 
   FilterType, 
-  FilterOperatorMap,
   FieldConfig,
   FilterValue,
   FilterState,

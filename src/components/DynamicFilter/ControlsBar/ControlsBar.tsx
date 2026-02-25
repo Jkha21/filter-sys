@@ -1,83 +1,63 @@
 import React from 'react';
-import {
-  Button,
-  ButtonGroup,
-  Typography,
-  Box,
-  Tooltip,
-  Fade
-} from '@mui/material';
-import {
-  Add as AddIcon,
-  FilterListOff as ClearAllIcon
-} from '@mui/icons-material';
+import { Button, Typography, Box, Fade, Stack, Divider } from '@mui/material';
+import { Plus, FilterX } from 'lucide-react'; 
 import type { FilterCondition } from '../../../types/filter.types';
-import '../../../styles/DynamicFilter/ControlsBar.scss';
 
 interface ControlsBarProps {
   filters: FilterCondition[];
-  onFiltersChange: (filters: FilterCondition[]) => void;
+  onAddFilter: () => void;
+  onClearAll: () => void;
+  filteredCount: number;
+  totalCount: number;
 }
 
 export const ControlsBar: React.FC<ControlsBarProps> = ({ 
   filters, 
-  onFiltersChange 
+  onAddFilter,
+  onClearAll,
+  filteredCount,
+  totalCount
 }) => {
-  const handleAddFilter = () => {
-    const newFilter: FilterCondition = {
-      id: `filter_${Date.now()}`,
-      field: '',
-      operator: '',
-      value: '',
-      isValid: false
-    };
-    onFiltersChange([...filters, newFilter]);
-  };
-
-  const handleClearAll = () => {
-    onFiltersChange([]);
-  };
-
-  const hasActiveFilters = filters.length > 0 && filters.some(f => 
-    f.field && f.operator && f.value && f.isValid
-  );
+  const hasActiveFilters = filters.length > 0;
 
   return (
     <Fade in timeout={300}>
-      <Box className="controls-bar-container">
-        <Box className="controls-left">
-          <Typography variant="body2" className="filters-count">
-            {filters.length} {filters.length === 1 ? 'filter' : 'filters'} active
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: 'background.paper' }}>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Typography variant="body2" color="text.secondary">
+            {hasActiveFilters ? (
+              <span>Found <b>{filteredCount}</b> of <b>{totalCount}</b> records</span>
+            ) : (
+              <span>Total records: <b>{totalCount}</b></span>
+            )}
           </Typography>
-        </Box>
+        </Stack>
         
-        <ButtonGroup 
-          className={`controls-buttons ${hasActiveFilters ? 'has-filters' : ''}`}
-          variant="contained"
-        >
-          <Tooltip title="Add new filter">
-            <Button 
-              className="add-button"
-              onClick={handleAddFilter}
-              startIcon={<AddIcon />}
-            >
-              Add Filter
-            </Button>
-          </Tooltip>
-          
+        <Stack direction="row" spacing={1}>
           {hasActiveFilters && (
-            <Tooltip title="Clear all filters">
-              <Button 
-                className="clear-all-button"
-                onClick={handleClearAll}
-                startIcon={<ClearAllIcon />}
-                variant="outlined"
-              >
-                Clear All
-              </Button>
-            </Tooltip>
+            <Button 
+              size="small"
+              color="inherit"
+              onClick={onClearAll}
+              startIcon={<FilterX size={16} />}
+              sx={{ textTransform: 'none' }}
+            >
+              Clear All
+            </Button>
           )}
-        </ButtonGroup>
+
+          <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+
+          <Button 
+            variant="contained" 
+            size="small"
+            onClick={onAddFilter}
+            startIcon={<Plus size={16} />}
+            disableElevation
+          >
+            Add Filter
+          </Button>
+        </Stack>
       </Box>
     </Fade>
   );

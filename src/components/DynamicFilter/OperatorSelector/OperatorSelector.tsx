@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useMemo, useEffect } from 'react';
 import {
   FormControl,
   InputLabel,
@@ -6,70 +6,54 @@ import {
   MenuItem,
   SelectChangeEvent
 } from '@mui/material';
-import type { FilterType } from '../../../types/filter.types';
-import '../../../styles/DynamicFilter/OperatorSelector.scss';
+import { FilterBuilderContext } from '../FilterBuilder/FilterBuilder';
+import type { FieldConfig } from '../../../types/filter.types';
 
 interface OperatorSelectorProps {
-  fieldType: FilterType;
+  fieldId: string;
   value: string;
   onChange: (operator: string) => void;
   className?: string;
 }
 
-const OPERATORS: Record<FilterType, string[]> = {
-  text: ['equals', 'contains', 'startsWith', 'endsWith', 'notContains'],
-  number: ['equals', 'greaterThan', 'lessThan', 'greaterThanEqual', 'lessThanEqual'],
-  date: ['between'],
-  amount: ['between'],
-  select: ['is', 'isNot'],
-  multiselect: ['in', 'notIn'],
-  boolean: ['is']
-};
-
-const OPERATOR_LABELS: Record<string, string> = {
-  equals: '=',
-  contains: 'contains',
-  startsWith: 'starts with',
-  endsWith: 'ends with',
-  notContains: 'not contains',
-  greaterThan: '>',
-  lessThan: '<',
-  greaterThanEqual: '≥',
-  lessThanEqual: '≤',
-  between: 'between',
-  is: 'is',
-  isNot: 'is not',
-  in: 'in',
-  notIn: 'not in'
-};
-
 export const OperatorSelector: React.FC<OperatorSelectorProps> = ({
-  fieldType,
+  fieldId,
   value,
   onChange,
   className = ''
 }) => {
-  const availableOperators = OPERATORS[fieldType] || [];
+  const context = useContext(FilterBuilderContext);
+  if (!context) return null;
+  const { schema } = context;
+
+  const availableOperators = useMemo(() => {
+    const fieldConfig = (schema as FieldConfig[]).find(f => f.id === fieldId);
+    return fieldConfig?.operators || [];
+  }, [schema, fieldId]);
+
+  useEffect(() => {
+    const isValid = availableOperators.some(op => op.value === value);
+    if (!isValid && availableOperators.length > 0) {
+      onChange(availableOperators[0].value);
+    }
+  }, [availableOperators, value, onChange]);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     onChange(event.target.value);
   };
 
-  const getLabel = (operator: string) => OPERATOR_LABELS[operator] || operator;
-
   return (
-    <FormControl size="small" className={`operator-selector ${className}`}>
-      <InputLabel>Operator</InputLabel>
+    <FormControl size="small" sx={{ minWidth: 140 }} className={className}>
+      <InputLabel id="operator-label">Operator</InputLabel>
       <Select
-        value={value}
+        labelId="operator-label"  // ✅ Matches InputLabel id exactly
+        value={value || ''}  // ✅ FIX: Ensure string value
         onChange={handleChange}
         label="Operator"
-        displayEmpty
-        notched
       >
-        {availableOperators.map((operator) => (
-          <MenuItem key={operator} value={operator}>
-            {getLabel(operator)}
+        {availableOperators.map((op) => (
+          <MenuItem key={op.value} value={op.value}>
+            {op.label || op.value.replace(/([A-Z])/g, ' $1').toLowerCase()}
           </MenuItem>
         ))}
       </Select>
