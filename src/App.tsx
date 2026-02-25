@@ -3,30 +3,18 @@ import { Paper } from '@mui/material';
 import Header from './components/Header';
 import { FilterBuilder } from './components/DynamicFilter/FilterBuilder/FilterBuilder';
 import { DataTable } from './components/DataTable/DataTable';
-import type { FieldSchema } from './types/filter.types';
 import type { Employee } from './types/employee.types';
-import { fieldConfigs } from './config/field.config';
+import { EMPLOYEE_SCHEMA } from './types/employee.types';
+import employeesData from '../src/data/employee.json';
 
 function App() {
-  const fieldSchema: FieldSchema[] = Array.isArray(fieldConfigs) 
-    ? fieldConfigs.map((config) => ({
-        id: String(config.key),
-        label: config.label,
-        type: config.type
-      }))
-    : [];
-
-  const [employees ] = React.useState<Employee[]>([]);
-  const [filteredEmployees, setFilteredEmployees] = React.useState<Employee[]>([]);
-  const [totalEmployees, setTotalEmployees] = React.useState(0);
+  const employees: Employee[] = employeesData;
+  const [filteredEmployees, setFilteredEmployees] = React.useState(employees);
+  const totalEmployees = employees.length;
 
   const handleFilteredDataChange = (filteredData: Employee[]) => {
     setFilteredEmployees(filteredData);
   };
-
-  React.useEffect(() => {
-    setTotalEmployees(1000);
-  }, []);
 
   const handleClearFilters = () => {
     setFilteredEmployees(employees);
@@ -80,19 +68,10 @@ function App() {
         onRefreshData={handleRefreshData}
       />
 
-      <Paper 
-        elevation={3}
-        sx={{ 
-          mx: 2, 
-          mt: 4, 
-          mb: 2,
-          p: 3,
-          borderRadius: 2
-        }}
-      >
+      <Paper elevation={3} sx={{ mx: 2, mt: 4, mb: 2, p: 3, borderRadius: 2 }}>
         <FilterBuilder
           data={employees}
-          schema={fieldSchema}
+          schema={EMPLOYEE_SCHEMA}
           onFilteredDataChange={handleFilteredDataChange}
         />
       </Paper>

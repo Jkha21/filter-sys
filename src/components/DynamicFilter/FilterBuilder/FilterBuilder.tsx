@@ -3,7 +3,8 @@ import { Box, Paper, Typography, Divider } from '@mui/material';
 import { Filter } from 'lucide-react'; 
 import { FilterList } from '../FilterList/FilterList';
 import { ControlsBar } from '../ControlsBar/ControlsBar';
-import { applyFilters } from '../FilterUtils/FilterUtils';
+import { applyFilters, validateFilter } from '../FilterUtils/FilterUtils';
+
 
 import type { 
   FieldConfig, 
@@ -11,27 +12,43 @@ import type {
   FilterBuilderContextValue 
 } from '../../../types/filter.types';
 import type { Employee } from '../../../types/employee.types';
+import { EMPLOYEE_SCHEMA } from '../../../types/employee.types';
 
-export const FilterBuilderContext = createContext<FilterBuilderContextValue | null>(null);
+export const FilterBuilderContext = createContext<FilterBuilderContextValue>({
+  schema: EMPLOYEE_SCHEMA,
+  updateFilter: () => {},
+  removeFilter: () => {}
+});
 
 interface FilterBuilderProps {
   data: Employee[];
-  schema: FieldConfig[]; // ✅ REQUIRED - NO FALLBACK
+  schema?: FieldConfig[];
   onFilteredDataChange?: (filteredData: Employee[]) => void;
 }
 
 export const FilterBuilder: React.FC<FilterBuilderProps> = ({ 
   data, 
-  schema, 
+  schema = EMPLOYEE_SCHEMA,
   onFilteredDataChange 
 }) => {
-  console.log('✅ Schema received:', schema.length, 'fields'); // Verify prop
+  console.log('✅ Schema received:', schema.length, 'fields');
 
   const [filters, setFilters] = useState<FilterCondition[]>([]);
 
   const updateFilter = useCallback((id: string, updates: Partial<FilterCondition>) => {
-    setFilters(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
-  }, []);
+    setFilters(prev => prev.map(f => {
+      if (f.id === id) {
+        const newFilter = { ...f, ...updates };
+        
+        const fieldConfig = schema.find(config => config.id === newFilter.field);
+        newFilter.type = fieldConfig?.type || 'text';
+        
+        newFilter.isValid = validateFilter(newFilter, newFilter.type || 'text');
+        return newFilter;
+      }
+      return f;
+    }));
+  }, [schema]);
 
   const removeFilter = useCallback((id: string) => {
     setFilters(prev => prev.filter(f => f.id !== id));
@@ -59,7 +76,7 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
   }, [filteredData, onFilteredDataChange]);
 
   const contextValue = useMemo(() => ({
-    schema,        // ✅ Original schema from parent
+    schema,        
     updateFilter,
     removeFilter
   }), [schema, updateFilter, removeFilter]);
@@ -72,7 +89,7 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
           <Box>
             <Typography variant="subtitle1" fontWeight="600">Dynamic Filters</Typography>
             <Typography variant="caption" color="text.secondary">
-              Advanced filtering enabled
+              {schema.length} fields available
             </Typography>
           </Box>
         </Box>

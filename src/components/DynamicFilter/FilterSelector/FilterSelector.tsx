@@ -4,10 +4,10 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  SelectChangeEvent,
-  Typography
+  SelectChangeEvent
 } from '@mui/material';
 import { FilterBuilderContext } from '../FilterBuilder/FilterBuilder';
+import type { FieldConfig } from '../../../types/filter.types';
 
 interface FieldSelectorProps {
   value: string;
@@ -19,27 +19,9 @@ export const FieldSelector: React.FC<FieldSelectorProps> = ({
   value,
   onChange
 }) => {
-  const context = useContext(FilterBuilderContext);
-  
-  // 🔥 DEBUG
-  console.log('🔍 FieldSelector:', {
-    value,
-    hasContext: !!context,
-    schemaLength: context?.schema?.length,
-    firstSchema: context?.schema?.[0]
-  });
+  const { schema } = useContext(FilterBuilderContext);
 
-  if (!context?.schema?.length) {
-    return (
-      <Typography color="error" variant="caption">
-        No schema (check parent component)
-      </Typography>
-    );
-  }
-
-  const { schema } = context;
   const handleChange = (event: SelectChangeEvent<string>) => {
-    console.log('🔍 Field changed to:', event.target.value);
     onChange(event.target.value);
   };
 
@@ -53,7 +35,7 @@ export const FieldSelector: React.FC<FieldSelectorProps> = ({
         label="Column"
       >
         <MenuItem value="" disabled>Select field...</MenuItem>
-        {schema.map((field: any) => (
+        {schema.map((field: FieldConfig) => (
           <MenuItem key={field.id} value={field.id}>
             {field.label}
           </MenuItem>

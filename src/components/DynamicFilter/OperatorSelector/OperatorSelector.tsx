@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useEffect } from 'react';
+import React, { useContext, useMemo, useEffect, useCallback } from 'react';
 import {
   FormControl,
   InputLabel,
@@ -18,7 +18,7 @@ interface OperatorSelectorProps {
 
 export const OperatorSelector: React.FC<OperatorSelectorProps> = ({
   fieldId,
-  value,
+  value: propValue,
   onChange,
   className = ''
 }) => {
@@ -31,29 +31,45 @@ export const OperatorSelector: React.FC<OperatorSelectorProps> = ({
     return fieldConfig?.operators || [];
   }, [schema, fieldId]);
 
-  useEffect(() => {
-    const isValid = availableOperators.some(op => op.value === value);
-    if (!isValid && availableOperators.length > 0) {
-      onChange(availableOperators[0].value);
-    }
-  }, [availableOperators, value, onChange]);
+  const defaultOperator = useMemo(() => {
+    if (availableOperators.length === 0) return '';
+    if (availableOperators.some(op => op.value === propValue)) return propValue;
+    return availableOperators[0].value;
+  }, [availableOperators, propValue]);
 
-  const handleChange = (event: SelectChangeEvent<string>) => {
+  useEffect(() => {
+    if (propValue !== defaultOperator && defaultOperator) {
+      onChange(defaultOperator);
+    }
+  }, [defaultOperator, propValue, onChange]);
+
+  const handleChange = useCallback((event: SelectChangeEvent<string>) => {
     onChange(event.target.value);
-  };
+  }, [onChange]);
+
+  if (availableOperators.length === 0) {
+    return (
+      <FormControl size="small" sx={{ minWidth: 140 }} className={className} disabled>
+        <InputLabel>Operator</InputLabel>
+        <Select value="" displayEmpty>
+          <MenuItem value="" disabled>No operators</MenuItem>
+        </Select>
+      </FormControl>
+    );
+  }
 
   return (
     <FormControl size="small" sx={{ minWidth: 140 }} className={className}>
       <InputLabel id="operator-label">Operator</InputLabel>
       <Select
-        labelId="operator-label"  // ✅ Matches InputLabel id exactly
-        value={value || ''}  // ✅ FIX: Ensure string value
+        labelId="operator-label"
+        value={defaultOperator}
         onChange={handleChange}
         label="Operator"
       >
         {availableOperators.map((op) => (
           <MenuItem key={op.value} value={op.value}>
-            {op.label || op.value.replace(/([A-Z])/g, ' $1').toLowerCase()}
+            {op.label || op.value.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
           </MenuItem>
         ))}
       </Select>

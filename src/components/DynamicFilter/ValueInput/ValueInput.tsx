@@ -6,7 +6,11 @@ import {
   Checkbox, 
   ToggleButtonGroup, 
   ToggleButton, 
-  Typography 
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import { CheckBox as CheckBoxIcon, CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon } from '@mui/icons-material';
 import type { FilterType } from '../../../types/filter.types';
@@ -28,8 +32,43 @@ export const ValueInput: React.FC<ValueInputProps> = ({
 }) => {
   const isRange = operator === 'between';
 
-  // Optimized Switch-Case to prevent redundant component initialization
+  const getSelectOptions = () => {
+    if (type === 'select') {
+      return [
+        { label: 'Engineering', value: 'Engineering' },
+        { label: 'Sales', value: 'Sales' },
+        { label: 'Marketing', value: 'Marketing' },
+        { label: 'HR', value: 'HR' },
+        { label: 'Finance', value: 'Finance' },
+        { label: 'Operations', value: 'Operations' }
+      ];
+    }
+    return options;
+  };
+
   switch (type) {
+    case 'select':
+      return (
+        <FormControl size="small" fullWidth>
+          <InputLabel>Select Department</InputLabel>
+          <Select
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value || '')}
+            label="Select Department"
+            displayEmpty
+          >
+            <MenuItem value="" disabled>
+              Select department...
+            </MenuItem>
+            {getSelectOptions().map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      );
+
     case 'text':
       return (
         <TextField 
@@ -114,7 +153,7 @@ export const ValueInput: React.FC<ValueInputProps> = ({
           <ToggleButton value="false" sx={{ textTransform: 'none' }}>False</ToggleButton>
         </ToggleButtonGroup>
       );
-      
+    
     default:
       return null;
   }
