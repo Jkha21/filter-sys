@@ -16,7 +16,7 @@ export const useFilters = () => {
       id: generateId(),
       field: '',
       operator: '',
-      value: null,
+      value: '',
       isValid: false
     };
     setFilters(prev => [...prev, newFilter]);

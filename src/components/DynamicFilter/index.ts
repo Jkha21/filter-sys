@@ -1,5 +1,4 @@
 export { FilterBuilder, FilterBuilderContext } from '../DynamicFilter/FilterBuilder/FilterBuilder';
-export type { FilterBuilderContextValue } from '../DynamicFilter/FilterBuilder/FilterBuilder';
 export { FilterList } from '../DynamicFilter/FilterList/FilterList';
 export { FilterConditionItem } from './FilterCondition/FilterConditonItem';
 export { FieldSelector } from '../DynamicFilter/FilterSelector/FilterSelector';

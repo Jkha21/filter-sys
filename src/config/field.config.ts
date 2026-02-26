@@ -1,6 +1,5 @@
 import { FieldConfig, FieldType, Operator } from '../types';
 
-// Base operator factories
 const createTextOperators = (): Operator[] => [
   { value: 'equals', label: 'Equals', inputType: 'text', apply: (row, val, key) => 
     row[key]?.toString().toLowerCase() === val?.toString().toLowerCase() },
@@ -33,39 +32,32 @@ const createSelectOperators = (): Operator[] => [
   { value: 'isNot', label: 'Is Not', inputType: 'select', apply: (row, val, key) => row[key] !== val }
 ];
 
-// const createMultiSelectOperators = (): Operator[] => [
-//   { value: 'in', label: 'Is In', inputType: 'multiselect', apply: (row, vals, key) => 
-//     vals.some((val: string) => row[key]?.includes(val)) },
-//   { value: 'notIn', label: 'Is Not In', inputType: 'multiselect', apply: (row, vals, key) => 
-//     !vals.some((val: string) => row[key]?.includes(val)) }
-// ];
-
-// Complete field configurations
 export const fieldConfigs: Record<string, FieldConfig> = {
-  // Text fields
   name: {
+    id: 'name',
     key: 'name',
     label: 'Name',
     type: 'text' as FieldType,
     operators: createTextOperators()
   },
   email: {
+    id: 'email',
     key: 'email',
     label: 'Email',
     type: 'text' as FieldType,
     operators: createTextOperators()
   },
   
-  // Nested text field
   'address.city': {
+    id: 'address.city',
     key: 'address.city',
     label: 'City',
     type: 'text' as FieldType,
     operators: createTextOperators()
   },
   
-  // Select fields
   department: {
+    id: 'department',
     key: 'department',
     label: 'Department',
     type: 'select' as FieldType,
@@ -81,28 +73,30 @@ export const fieldConfigs: Record<string, FieldConfig> = {
     ]
   },
   
-  // Number/Amount fields
   salary: {
+    id: 'salary',
     key: 'salary',
     label: 'Salary',
     type: 'amount' as FieldType,
     operators: createNumberOperators()
   },
   projects: {
+    id: 'projects',
     key: 'projects',
     label: 'Projects',
     type: 'number' as FieldType,
     operators: createNumberOperators()
   },
   performanceRating: {
+    id: 'performanceRating',
     key: 'performanceRating',
     label: 'Performance Rating',
     type: 'number' as FieldType,
     operators: createNumberOperators()
   },
   
-  // Date fields
   joinDate: {
+    id: 'joinDate',
     key: 'joinDate',
     label: 'Join Date',
     type: 'date' as FieldType,
@@ -119,6 +113,7 @@ export const fieldConfigs: Record<string, FieldConfig> = {
     }]
   },
   lastReview: {
+    id: 'lastReview',
     key: 'lastReview',
     label: 'Last Review',
     type: 'date' as FieldType,
@@ -136,8 +131,8 @@ export const fieldConfigs: Record<string, FieldConfig> = {
     }]
   },
   
-  // Boolean field
   isActive: {
+    id: 'isActive',
     key: 'isActive',
     label: 'Active Status',
     type: 'boolean' as FieldType,
@@ -145,5 +140,4 @@ export const fieldConfigs: Record<string, FieldConfig> = {
   }
 };
 
-// All available fields for dropdown
 export const availableFields = Object.values(fieldConfigs);
